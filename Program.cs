@@ -23,7 +23,10 @@ services.AddDbContext<BankingDbContext>(options =>
     options.UseSqlServer(connectionString));
 
 services.AddScoped<ICustomerRepository, CustomerRepository>();
+services.AddScoped<IBankAccountRepository, BankAccountRepository>();
+
 services.AddScoped<CustomerService>();
+services.AddScoped<BankAccountService>();
 
 using var provider = services.BuildServiceProvider();
 
@@ -36,9 +39,15 @@ while (running)
     var customerService =
         scope.ServiceProvider.GetRequiredService<CustomerService>();
 
-    Console.WriteLine("\n===== CUSTOMER MANAGEMENT =====");
+    var accountService =
+        scope.ServiceProvider.GetRequiredService<BankAccountService>();
+
+    Console.WriteLine("\n===== BANKING TRANSACTION MANAGEMENT =====");
     Console.WriteLine("1. Register customer");
     Console.WriteLine("2. View all customers");
+    Console.WriteLine("3. Create bank account");
+    Console.WriteLine("4. View all bank accounts");
+    Console.WriteLine("5. View accounts by customer ID");
     Console.WriteLine("0. Exit");
     Console.Write("Choose an option: ");
 
@@ -64,6 +73,41 @@ while (running)
 
             case "2":
                 await customerService.DisplayCustomersAsync();
+                break;
+
+            case "3":
+                Console.Write("Enter customer ID: ");
+
+                if (!int.TryParse(Console.ReadLine(), out var customerId)
+                    || customerId <= 0)
+                {
+                    Console.WriteLine("Enter a valid positive customer ID.");
+                    break;
+                }
+
+                Console.Write("Enter account number: ");
+                var accountNumber = Console.ReadLine() ?? "";
+
+                await accountService.CreateAccountAsync(
+                    customerId, accountNumber);
+                break;
+
+            case "4":
+                await accountService.DisplayAllAccountsAsync();
+                break;
+
+            case "5":
+                Console.Write("Enter customer ID: ");
+
+                if (!int.TryParse(Console.ReadLine(), out var searchCustomerId)
+                    || searchCustomerId <= 0)
+                {
+                    Console.WriteLine("Enter a valid positive customer ID.");
+                    break;
+                }
+
+                await accountService.DisplayCustomerAccountsAsync(
+                    searchCustomerId);
                 break;
 
             case "0":

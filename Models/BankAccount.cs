@@ -16,7 +16,12 @@ public class BankAccount
 
     public Customer? Customer { get; set; }
 
-    public decimal Balance { get; set; }
+    public decimal Balance { get; set; } = 0;
+
+    public AccountStatus Status { get; set; } = AccountStatus.Active;
 
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+
+    [Timestamp]
+    public byte[] RowVersion { get; set; } = Array.Empty<byte>();
 }

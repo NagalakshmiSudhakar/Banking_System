@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿
+namespace BankingSystem.Models;
 
-namespace BankingSystem.Models
+public enum AccountStatus
 {
-    internal class AccountStatus
-    {
-    }
+    Active,
+    Frozen,
+    Closed
 }
