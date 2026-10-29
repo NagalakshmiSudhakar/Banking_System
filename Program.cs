@@ -1,5 +1,8 @@
 ﻿
 using BankingSystem.Data;
+using BankingSystem.Repositories;
+using BankingSystem.Repositories.Interfaces;
+using BankingSystem.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,29 +15,69 @@ var configuration = new ConfigurationBuilder()
 var connectionString =
     configuration.GetConnectionString("BankingConnection")
     ?? throw new InvalidOperationException(
-        "BankingConnection not found in appsettings.json.");
+        "BankingConnection not found.");
 
 var services = new ServiceCollection();
 
 services.AddDbContext<BankingDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+services.AddScoped<ICustomerRepository, CustomerRepository>();
+services.AddScoped<CustomerService>();
+
 using var provider = services.BuildServiceProvider();
-using var scope = provider.CreateScope();
 
-var dbContext =
-    scope.ServiceProvider.GetRequiredService<BankingDbContext>();
+var running = true;
 
-try
+while (running)
 {
-    bool connected = await dbContext.Database.CanConnectAsync();
+    using var scope = provider.CreateScope();
 
-    Console.WriteLine(
-        connected
-            ? "Database connection successful!"
-            : "Unable to connect to the database. Check your SQL Server instance.");
-}
-catch (Exception ex)
-{
-    Console.WriteLine($"Database connection failed: {ex.Message}");
+    var customerService =
+        scope.ServiceProvider.GetRequiredService<CustomerService>();
+
+    Console.WriteLine("\n===== CUSTOMER MANAGEMENT =====");
+    Console.WriteLine("1. Register customer");
+    Console.WriteLine("2. View all customers");
+    Console.WriteLine("0. Exit");
+    Console.Write("Choose an option: ");
+
+    var choice = Console.ReadLine()?.Trim();
+
+    try
+    {
+        switch (choice)
+        {
+            case "1":
+                Console.Write("Full name: ");
+                var name = Console.ReadLine() ?? "";
+
+                Console.Write("Email: ");
+                var email = Console.ReadLine() ?? "";
+
+                Console.Write("Phone: ");
+                var phone = Console.ReadLine() ?? "";
+
+                await customerService.RegisterCustomerAsync(
+                    name, email, phone);
+                break;
+
+            case "2":
+                await customerService.DisplayCustomersAsync();
+                break;
+
+            case "0":
+                running = false;
+                Console.WriteLine("Application closed.");
+                break;
+
+            default:
+                Console.WriteLine("Invalid option.");
+                break;
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.WriteLine($"Error: {ex.Message}");
+    }
 }
