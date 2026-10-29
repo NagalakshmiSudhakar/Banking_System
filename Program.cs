@@ -56,6 +56,8 @@ while (running)
     Console.WriteLine("6. Deposit money");
     Console.WriteLine("7. Withdraw money");
     Console.WriteLine("8. View transaction history");
+    Console.WriteLine("9. Freeze bank account");
+    Console.WriteLine("10. Unfreeze bank account");
     Console.WriteLine("0. Exit");
     Console.Write("Choose an option: ");
 
@@ -167,6 +169,29 @@ while (running)
 
                 await transactionService.DisplayTransactionHistoryAsync(
                     historyAccountId);
+                break;
+
+
+            case "9":
+            case "10":
+                Console.Write("Enter account ID: ");
+
+                if (!int.TryParse(Console.ReadLine(), out var statusAccountId)
+                    || statusAccountId <= 0)
+                {
+                    Console.WriteLine("Enter a valid positive account ID.");
+                    break;
+                }
+
+                if (choice == "9")
+                {
+                    await accountService.FreezeAccountAsync(statusAccountId);
+                }
+                else
+                {
+                    await accountService.UnfreezeAccountAsync(statusAccountId);
+                }
+
                 break;
 
             case "0":

@@ -62,4 +62,11 @@ public class BankAccountRepository : IBankAccountRepository
         return await _context.Set<BankAccount>()
             .AnyAsync(a => a.AccountNumber == accountNumber);
     }
+
+    public async Task UpdateAsync(BankAccount account)
+    {
+        _context.BankAccounts.Update(account);
+        await _context.SaveChangesAsync();
+    }
+
 }

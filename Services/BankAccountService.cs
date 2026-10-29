@@ -136,4 +136,78 @@ public class BankAccountService
                 $"Status: {account.Status}");
         }
     }
+
+
+    public async Task FreezeAccountAsync(int accountId)
+    {
+        if (accountId <= 0)
+        {
+            throw new ArgumentException(
+                "Account ID must be a positive number.");
+        }
+
+        var account = await _accountRepository.GetByIdAsync(accountId);
+
+        if (account is null)
+        {
+            throw new InvalidOperationException(
+                $"Account with ID {accountId} was not found.");
+        }
+
+        if (account.Status == AccountStatus.Frozen)
+        {
+            throw new InvalidOperationException(
+                "This account is already frozen.");
+        }
+
+        if (account.Status == AccountStatus.Closed)
+        {
+            throw new InvalidOperationException(
+                "A closed account cannot be frozen.");
+        }
+
+        account.Status = AccountStatus.Frozen;
+
+        await _accountRepository.UpdateAsync(account);
+
+        Console.WriteLine(
+            $"Account {account.AccountNumber} has been frozen successfully.");
+    }
+
+    public async Task UnfreezeAccountAsync(int accountId)
+    {
+        if (accountId <= 0)
+        {
+            throw new ArgumentException(
+                "Account ID must be a positive number.");
+        }
+
+        var account = await _accountRepository.GetByIdAsync(accountId);
+
+        if (account is null)
+        {
+            throw new InvalidOperationException(
+                $"Account with ID {accountId} was not found.");
+        }
+
+        if (account.Status == AccountStatus.Active)
+        {
+            throw new InvalidOperationException(
+                "This account is already active.");
+        }
+
+        if (account.Status == AccountStatus.Closed)
+        {
+            throw new InvalidOperationException(
+                "A closed account cannot be reactivated.");
+        }
+
+        account.Status = AccountStatus.Active;
+
+        await _accountRepository.UpdateAsync(account);
+
+        Console.WriteLine(
+            $"Account {account.AccountNumber} has been unfrozen successfully.");
+    }
+
 }

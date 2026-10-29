@@ -25,3 +25,25 @@
 **Commit:** `feat: add bank account management`
 
 **Commit hash:** bffc4eeb6f195b40257dc626e75cffbc204741ae
+
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### Deposit and Withdrawal Management
+
+- Implemented deposit functionality to add money to bank accounts.
+- Implemented withdrawal functionality with insufficient-balance validation.
+- Added validation for account IDs, positive transaction amounts, and active account status.
+- Created the `TransactionType` enum to distinguish deposits and withdrawals.
+- Created the `BankTransaction` model to store transaction details, amounts, and balances after transactions.
+- Created the transaction repository interface and repository for storing and retrieving transaction records.
+- Implemented `BankTransactionService` to handle deposits, withdrawals, and transaction history.
+- Updated `BankingDbContext` with transaction entity configuration, monetary precision, and account relationships.
+- Updated `Program.cs` with deposit, withdrawal, and transaction history menu options.
+- Applied the `AddBankTransactions` EF Core migration.
+- Tested deposits, withdrawals, insufficient-balance validation, and transaction history.
+
+**Commit:** `feat: add deposit and withdrawal management`
+
+**Commit hash:** 5ec21841aa34f78cfdd571369d9154e38cf163d0
+
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+

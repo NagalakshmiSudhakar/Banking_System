@@ -16,4 +16,6 @@ public interface IBankAccountRepository
     Task<List<BankAccount>> GetByCustomerIdAsync(int customerId);
 
     Task<bool> AccountNumberExistsAsync(string accountNumber);
+
+    Task UpdateAsync(BankAccount account);
 }
