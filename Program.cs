@@ -24,9 +24,11 @@ services.AddDbContext<BankingDbContext>(options =>
 
 services.AddScoped<ICustomerRepository, CustomerRepository>();
 services.AddScoped<IBankAccountRepository, BankAccountRepository>();
+services.AddScoped<IBankTransactionRepository, BankTransactionRepository>();
 
 services.AddScoped<CustomerService>();
 services.AddScoped<BankAccountService>();
+services.AddScoped<BankTransactionService>();
 
 using var provider = services.BuildServiceProvider();
 
@@ -42,12 +44,18 @@ while (running)
     var accountService =
         scope.ServiceProvider.GetRequiredService<BankAccountService>();
 
+    var transactionService =
+        scope.ServiceProvider.GetRequiredService<BankTransactionService>();
+
     Console.WriteLine("\n===== BANKING TRANSACTION MANAGEMENT =====");
     Console.WriteLine("1. Register customer");
     Console.WriteLine("2. View all customers");
     Console.WriteLine("3. Create bank account");
     Console.WriteLine("4. View all bank accounts");
     Console.WriteLine("5. View accounts by customer ID");
+    Console.WriteLine("6. Deposit money");
+    Console.WriteLine("7. Withdraw money");
+    Console.WriteLine("8. View transaction history");
     Console.WriteLine("0. Exit");
     Console.Write("Choose an option: ");
 
@@ -110,6 +118,57 @@ while (running)
                     searchCustomerId);
                 break;
 
+            case "6":
+            case "7":
+                Console.Write("Enter account ID: ");
+
+                if (!int.TryParse(Console.ReadLine(), out var transactionAccountId)
+                    || transactionAccountId <= 0)
+                {
+                    Console.WriteLine("Enter a valid positive account ID.");
+                    break;
+                }
+
+                Console.Write("Enter amount: ");
+
+                if (!decimal.TryParse(
+                    Console.ReadLine(),
+                    System.Globalization.NumberStyles.Number,
+                    System.Globalization.CultureInfo.InvariantCulture,
+                    out var amount)
+                    || amount <= 0)
+                {
+                    Console.WriteLine("Enter a valid positive amount.");
+                    break;
+                }
+
+                if (choice == "6")
+                {
+                    await transactionService.DepositAsync(
+                        transactionAccountId, amount);
+                }
+                else
+                {
+                    await transactionService.WithdrawAsync(
+                        transactionAccountId, amount);
+                }
+
+                break;
+
+            case "8":
+                Console.Write("Enter account ID: ");
+
+                if (!int.TryParse(Console.ReadLine(), out var historyAccountId)
+                    || historyAccountId <= 0)
+                {
+                    Console.WriteLine("Enter a valid positive account ID.");
+                    break;
+                }
+
+                await transactionService.DisplayTransactionHistoryAsync(
+                    historyAccountId);
+                break;
+
             case "0":
                 running = false;
                 Console.WriteLine("Application closed.");
@@ -123,5 +182,6 @@ while (running)
     catch (Exception ex)
     {
         Console.WriteLine($"Error: {ex.Message}");
+        Console.WriteLine($"Details: {ex.InnerException?.Message}");
     }
 }

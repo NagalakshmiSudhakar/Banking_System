@@ -16,10 +16,14 @@ public class BankingDbContext : DbContext
 
     public DbSet<BankAccount> BankAccounts => Set<BankAccount>();
 
+    public DbSet<BankTransaction> BankTransactions =>
+        Set<BankTransaction>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
+        // Bank account configuration
         modelBuilder.Entity<BankAccount>()
             .HasIndex(account => account.AccountNumber)
             .IsUnique();
@@ -37,5 +41,27 @@ public class BankingDbContext : DbContext
             .WithMany(customer => customer.Accounts)
             .HasForeignKey(account => account.CustomerId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        // Transaction configuration
+        modelBuilder.Entity<BankTransaction>()
+            .Property(transaction => transaction.Amount)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<BankTransaction>()
+            .Property(transaction => transaction.BalanceAfterTransaction)
+            .HasPrecision(18, 2);
+
+        modelBuilder.Entity<BankTransaction>()
+            .HasOne(transaction => transaction.Account)
+            .WithMany()
+            .HasForeignKey(transaction => transaction.AccountId)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<BankTransaction>()
+            .HasIndex(transaction => new
+            {
+                transaction.AccountId,
+                transaction.TransactionDate
+            });
     }
 }
