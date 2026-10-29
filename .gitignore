@@ -1,0 +1,52 @@
+﻿
+# Build output
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Visual Studio Code
+.vscode/
+
+# JetBrains Rider
+.idea/
+
+# NuGet packages
+*.nupkg
+.nuget/
+
+# Logs
+*.log
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+appsettings.Local.json
+appsettings.Development.json
+
+# Database files
+*.mdf
+*.ldf
+*.sqlite
+*.db
+
+# Operating system files
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Temporary files
+*.tmp
+*.bak
+
+# Test results
+TestResults/
+
+# Publish output
+publish/
